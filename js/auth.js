@@ -1,165 +1,10 @@
-<<<<<<< HEAD
-class AuthSystem {
-  constructor() {
-    this.baseUrl = "/api";
-  }
-=======
 // auth.js - Authentication System for Kopi Prima
 class AuthSystem {
   constructor() {
     this.baseUrl = "/api";
     this.init();
   }
->>>>>>> fad4485b7ea1c92ced64dd881f947e6ca5af5085
 
-<<<<<<< HEAD
-  async checkAuth() {
-    try {
-      const isLoggedIn = localStorage.getItem("isLoggedIn");
-      const currentUser = localStorage.getItem("currentUser");
-
-      if (isLoggedIn && currentUser) {
-        return {
-          success: true,
-          user: JSON.parse(currentUser),
-        };
-      } else {
-        return { success: false };
-      }
-    } catch (error) {
-      console.error("Auth check error:", error);
-      return { success: false };
-    }
-  }
-
-  // Login user
-  async login(username, password) {
-    try {
-      const response = await fetch(`${this.baseUrl}/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username, password }),
-      });
-
-      const data = await response.json();
-
-      if (data.success && data.user) {
-        localStorage.setItem("isLoggedIn", "true");
-        localStorage.setItem("currentUser", JSON.stringify(data.user));
-        localStorage.setItem("userName", data.user.username);
-      }
-
-      return data;
-    } catch (error) {
-      console.error("Login error:", error);
-      return { success: false, message: "Terjadi kesalahan jaringan" };
-    }
-  }
-
-  // Register user
-  async register(userData) {
-    try {
-      const response = await fetch(`${this.baseUrl}/register`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(userData),
-      });
-
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.error("Register error:", error);
-      return { success: false, message: "Terjadi kesalahan jaringan" };
-    }
-  }
-
-  // Logout user
-  async logout() {
-    try {
-      localStorage.removeItem("isLoggedIn");
-      localStorage.removeItem("currentUser");
-      localStorage.removeItem("userName");
-      localStorage.removeItem("userEmail");
-
-      return { success: true, message: "Logout berhasil!" };
-    } catch (error) {
-      console.error("Logout error:", error);
-      return { success: false, message: "Terjadi kesalahan" };
-    }
-  }
-
-  async updateAuthUI() {
-    const auth = await this.checkAuth();
-    const userInfo = document.getElementById("userInfo");
-    const loginBtn = document.getElementById("loginBtn");
-    const logoutBtn = document.getElementById("logoutBtn");
-    const userName = document.getElementById("userName");
-    const userGreeting = document.getElementById("userGreeting");
-
-    if (auth.success && auth.user) {
-      if (userInfo) {
-        userInfo.textContent = `Hello, ${auth.user.username}`;
-        userInfo.style.display = "inline";
-      }
-      if (loginBtn) loginBtn.style.display = "none";
-      if (logoutBtn) logoutBtn.style.display = "inline";
-      if (userName) userName.textContent = auth.user.username;
-      if (userGreeting)
-        userGreeting.textContent = `Selamat datang, ${auth.user.username}!`;
-
-      localStorage.setItem("userName", auth.user.username);
-      localStorage.setItem("userEmail", auth.user.email);
-    } else {
-      if (userInfo) userInfo.style.display = "none";
-      if (loginBtn) loginBtn.style.display = "inline";
-      if (logoutBtn) logoutBtn.style.display = "none";
-      if (userName) {
-        const storedName = localStorage.getItem("userName");
-        userName.textContent = storedName || "Guest";
-      }
-      if (userGreeting) userGreeting.textContent = "Selamat datang, Guest!";
-    }
-  }
-
-  protectRoute() {
-    this.checkAuth().then((auth) => {
-      if (!auth.success) {
-        window.location.href = "/login.html";
-      }
-    });
-  }
-
-  getCurrentUser() {
-    const userData = localStorage.getItem("currentUser");
-    return userData ? JSON.parse(userData) : null;
-  }
-}
-
-const auth = new AuthSystem();
-
-document.addEventListener("DOMContentLoaded", function () {
-  auth.updateAuthUI();
-});
-
-window.authSystem = auth;
-
-window.checkLogin = function () {
-  return auth.checkAuth();
-};
-
-window.logoutUser = function () {
-  auth.logout().then((result) => {
-    if (result.success) {
-      window.location.href = "/login.html";
-    }
-  });
-};
-
-=======
   init() {
     console.log("AuthSystem initialized");
   }
@@ -169,8 +14,9 @@ window.logoutUser = function () {
     try {
       const isLoggedIn = localStorage.getItem("isLoggedIn");
       const currentUser = localStorage.getItem("currentUser");
+      const userRole = localStorage.getItem("userRole"); // Tambahkan ini
 
-      console.log("checkAuth called:", { isLoggedIn, currentUser });
+      console.log("checkAuth called:", { isLoggedIn, currentUser, userRole });
 
       // Validate if data exists and is valid
       if (isLoggedIn === "true" && currentUser) {
@@ -197,44 +43,74 @@ window.logoutUser = function () {
   }
 
   // Login user
-  async login(username, password) {
+  async login(username, password, role = "customer") {
     try {
-      console.log("Attempting login for:", username);
+      console.log("Attempting login for:", username, "Role:", role);
 
-      const response = await fetch(`${this.baseUrl}/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      // Simulate API response for demo
+      // In production, replace with actual API call
+      const mockUsers = [
+        {
+          id: 1,
+          username: "admin",
+          password: "admin123",
+          role: "admin",
+          email: "admin@kopiprima.co.id",
+          name: "Admin User",
         },
-        body: JSON.stringify({ username, password }),
-      });
+        {
+          id: 2,
+          username: "john",
+          password: "john123",
+          role: "customer",
+          email: "john@example.com",
+          name: "John Doe",
+        },
+        {
+          id: 3,
+          username: "sarah",
+          password: "sarah123",
+          role: "customer",
+          email: "sarah@example.com",
+          name: "Sarah Smith",
+        },
+      ];
 
-      const data = await response.json();
-      console.log("Login response:", data);
+      // Simulate API call delay
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
-      if (data.success && data.user) {
+      const user = mockUsers.find(
+        (u) => u.username === username && u.password === password
+      );
+
+      if (user) {
         // Store authentication data
         localStorage.setItem("isLoggedIn", "true");
-        localStorage.setItem("currentUser", JSON.stringify(data.user));
-        localStorage.setItem("userName", data.user.username);
-        localStorage.setItem("userEmail", data.user.email || "");
-
-        // Set login timestamp
+        localStorage.setItem("currentUser", JSON.stringify(user));
+        localStorage.setItem("userName", user.name || user.username);
+        localStorage.setItem("userEmail", user.email || "");
+        localStorage.setItem("userRole", user.role || "customer");
         localStorage.setItem("loginTimestamp", Date.now().toString());
+
+        // Set flag for showing notification
+        sessionStorage.setItem("justLoggedIn", "true");
 
         console.log("✅ Login successful, user data stored");
 
         // Trigger UI update
         this.updateAuthUI();
 
-        // Return success with user data
         return {
-          ...data,
-          redirectUrl: "/index.html", // Redirect ke index setelah login
+          success: true,
+          message: "Login berhasil!",
+          user: user,
+          redirectUrl: "index.html",
         };
       } else {
-        console.error("Login failed:", data.message);
-        return data;
+        return {
+          success: false,
+          message: "Username atau password salah",
+        };
       }
     } catch (error) {
       console.error("Login error:", error);
@@ -250,18 +126,40 @@ window.logoutUser = function () {
     try {
       console.log("Registering user:", userData.username);
 
-      const response = await fetch(`${this.baseUrl}/register`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(userData),
-      });
+      // Simulate API response for demo
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
-      const data = await response.json();
-      console.log("Register response:", data);
+      // Check if username already exists (in demo)
+      const existingUsers = JSON.parse(
+        localStorage.getItem("registeredUsers") || "[]"
+      );
+      const exists = existingUsers.some(
+        (u) => u.username === userData.username
+      );
 
-      return data;
+      if (exists) {
+        return {
+          success: false,
+          message: "Username sudah digunakan",
+        };
+      }
+
+      // Add new user
+      const newUser = {
+        id: existingUsers.length + 1,
+        ...userData,
+        role: "customer",
+        createdAt: new Date().toISOString(),
+      };
+
+      existingUsers.push(newUser);
+      localStorage.setItem("registeredUsers", JSON.stringify(existingUsers));
+
+      return {
+        success: true,
+        message: "Registrasi berhasil! Silakan login.",
+        user: newUser,
+      };
     } catch (error) {
       console.error("Register error:", error);
       return {
@@ -285,6 +183,7 @@ window.logoutUser = function () {
       localStorage.removeItem("currentUser");
       localStorage.removeItem("userName");
       localStorage.removeItem("userEmail");
+      localStorage.removeItem("userRole"); // Tambahkan ini
       localStorage.removeItem("loginTimestamp");
 
       // Clear sessionStorage as well
@@ -303,7 +202,6 @@ window.logoutUser = function () {
         success: true,
         message: "Logout berhasil! Anda sekarang dalam mode Guest.",
         username: username,
-        // TIDAK ADA redirectUrl di sini, tetap di halaman yang sama
       };
     } catch (error) {
       console.error("Logout error:", error);
@@ -338,7 +236,7 @@ window.logoutUser = function () {
     }
   }
 
-  // Update UI based on authentication status
+  // Update UI based on authentication status - DIPERBAIKI
   async updateAuthUI() {
     try {
       const auth = await this.checkAuth();
@@ -350,33 +248,55 @@ window.logoutUser = function () {
       const userName = document.getElementById("userName");
       const userGreeting = document.getElementById("userGreeting");
 
+      // PERBAIKAN: Tambahkan tombol dashboard
+      const dashboardBtn = document.getElementById("dashboardBtn");
+
+      // Buat tombol dashboard jika belum ada
+      if (!dashboardBtn && auth.success) {
+        this.createDashboardButton();
+      }
+
       if (auth.success && auth.user) {
         // User is logged in
         console.log("Setting UI to logged in state for:", auth.user.username);
 
+        // Update semua elemen UI
         if (userInfo) {
-          userInfo.textContent = `Hello, ${auth.user.username}`;
+          userInfo.textContent = `Halo, ${
+            auth.user.name || auth.user.username
+          }`;
           userInfo.classList.remove("d-none");
-          userInfo.style.display = "inline";
         }
 
+        // Sembunyikan tombol login
         if (loginBtn) {
           loginBtn.classList.add("d-none");
-          loginBtn.style.display = "none";
         }
 
+        // Tampilkan tombol dashboard
+        const existingDashboardBtn = document.getElementById("dashboardBtn");
+        if (existingDashboardBtn) {
+          existingDashboardBtn.classList.remove("d-none");
+        }
+
+        // Tampilkan tombol logout
         if (logoutBtn) {
           logoutBtn.classList.remove("d-none");
-          logoutBtn.style.display = "inline-block";
         }
 
+        // Update nama user di hero section
         if (userName) {
-          userName.textContent = auth.user.username;
+          userName.textContent = auth.user.name || auth.user.username;
         }
 
         if (userGreeting) {
-          userGreeting.textContent = `Selamat datang, ${auth.user.username}!`;
+          userGreeting.textContent = `Selamat datang, ${
+            auth.user.name || auth.user.username
+          }!`;
         }
+
+        // Tambahkan nama ke localStorage untuk konsistensi
+        localStorage.setItem("userName", auth.user.name || auth.user.username);
       } else {
         // User is not logged in (Guest)
         console.log("Setting UI to guest state");
@@ -384,17 +304,24 @@ window.logoutUser = function () {
         if (userInfo) {
           userInfo.textContent = "";
           userInfo.classList.add("d-none");
-          userInfo.style.display = "none";
         }
 
+        // Tampilkan tombol login
         if (loginBtn) {
           loginBtn.classList.remove("d-none");
-          loginBtn.style.display = "inline-block";
+          loginBtn.textContent = "Login";
+          loginBtn.href = "login.html";
         }
 
+        // Sembunyikan tombol dashboard
+        const existingDashboardBtn = document.getElementById("dashboardBtn");
+        if (existingDashboardBtn) {
+          existingDashboardBtn.classList.add("d-none");
+        }
+
+        // Sembunyikan tombol logout
         if (logoutBtn) {
           logoutBtn.classList.add("d-none");
-          logoutBtn.style.display = "none";
         }
 
         if (userName) {
@@ -415,6 +342,38 @@ window.logoutUser = function () {
     }
   }
 
+  // Buat tombol dashboard secara dinamis
+  createDashboardButton() {
+    const navbarNav = document.querySelector(".navbar-nav");
+    if (!navbarNav) return;
+
+    // Cek apakah tombol dashboard sudah ada
+    if (document.getElementById("dashboardBtn")) return;
+
+    // Buat tombol dashboard
+    const dashboardBtn = document.createElement("a");
+    dashboardBtn.id = "dashboardBtn";
+    dashboardBtn.className = "nav-link d-none";
+    dashboardBtn.href = "dashboard.html";
+    dashboardBtn.innerHTML =
+      '<i class="fas fa-tachometer-alt me-1"></i>Dashboard';
+
+    // Tambahkan ke navbar
+    const li = document.createElement("li");
+    li.className = "nav-item";
+    li.appendChild(dashboardBtn);
+
+    // Tempatkan sebelum tombol Logout di navbar
+    const logoutLi = document
+      .querySelector('.nav-item .nav-link[href="login.html"]')
+      ?.closest(".nav-item");
+    if (logoutLi) {
+      navbarNav.insertBefore(li, logoutLi.nextSibling);
+    } else {
+      navbarNav.appendChild(li);
+    }
+  }
+
   // Ensure localStorage is clean when user is not authenticated
   ensureCleanStorage() {
     try {
@@ -424,6 +383,7 @@ window.logoutUser = function () {
         localStorage.removeItem("currentUser");
         localStorage.removeItem("userName");
         localStorage.removeItem("userEmail");
+        localStorage.removeItem("userRole");
         localStorage.removeItem("loginTimestamp");
       }
     } catch (error) {
@@ -432,11 +392,15 @@ window.logoutUser = function () {
   }
 
   // Protect routes - redirect to login if not authenticated
-  protectRoute() {
+  protectRoute(requiredRole = null) {
     this.checkAuth().then((auth) => {
       if (!auth.success) {
         console.log("Route protected - redirecting to login");
-        window.location.href = "/login.html";
+        window.location.href = "login.html";
+      } else if (requiredRole && auth.user.role !== requiredRole) {
+        // Check role permission
+        console.log("Insufficient permissions - redirecting");
+        window.location.href = "index.html";
       }
     });
   }
@@ -461,7 +425,12 @@ window.logoutUser = function () {
   // Get user's name
   getUserName() {
     const user = this.getCurrentUser();
-    return user ? user.username : "Guest";
+    return user ? user.name || user.username : "Guest";
+  }
+
+  // Get user's role
+  getUserRole() {
+    return localStorage.getItem("userRole") || "customer";
   }
 
   // Validate session (check if login is still valid)
@@ -494,6 +463,7 @@ window.logoutUser = function () {
       isLoggedIn: localStorage.getItem("isLoggedIn"),
       currentUser: this.getCurrentUser(),
       userName: localStorage.getItem("userName"),
+      userRole: localStorage.getItem("userRole"),
       loginTimestamp: localStorage.getItem("loginTimestamp"),
     };
   }
@@ -511,6 +481,23 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Update UI
   auth.updateAuthUI();
+
+  // Setup event listeners untuk logout button
+  const logoutBtn = document.getElementById("logoutBtn");
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", async function (e) {
+      e.preventDefault();
+      const result = await auth.logout();
+      if (result.success) {
+        // Show notification if notification system exists
+        if (typeof showLogoutNotification === "function") {
+          showLogoutNotification();
+        }
+        // Redirect ke index.html setelah logout
+        window.location.href = "index.html";
+      }
+    });
+  }
 });
 
 // Make auth system globally accessible
@@ -521,12 +508,13 @@ window.checkLogin = function () {
   return auth.checkAuth();
 };
 
-// Logout tanpa redirect
+// Logout function yang benar
 window.logoutUser = async function () {
   const result = await auth.logout();
   if (result.success) {
-    console.log("Logout successful, staying on current page");
-    // Tidak ada redirect, hanya update UI
+    console.log("Logout successful");
+    // Redirect ke halaman utama
+    window.location.href = "index.html";
   }
   return result;
 };
@@ -539,9 +527,12 @@ window.getAuthStatus = function () {
   return auth.getAuthStatus();
 };
 
+// Helper untuk check jika user adalah admin
+window.isAdmin = function () {
+  return auth.getUserRole() === "admin";
+};
+
 // Export for module systems (if needed)
 if (typeof module !== "undefined" && module.exports) {
   module.exports = AuthSystem;
 }
-
->>>>>>> fad4485b7ea1c92ced64dd881f947e6ca5af5085
